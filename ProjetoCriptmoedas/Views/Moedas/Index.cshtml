@@ -1,0 +1,89 @@
+﻿@model IEnumerable<ProjetoCriptmoedas.Models.Moedas>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Moedas</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nova Moeda</a>
+</p>
+
+<div>
+    <div class="col-lg-6 well">
+        @await Component.InvokeAsync("Moedas")
+    </div>
+    <div class="col-lg-6">
+        <partial name="_Graficos"/>
+    </div>
+</div>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    function PegarMoedas(dados) {
+        var quantidades = 0;
+        var moedas = [];
+
+        while (quantidades < dados.length) {
+            moedas.push(dados[quantidades].nome);
+            quantidades++;
+        }
+        return moedas;
+    }
+
+    function PegarQuantidades(dados) {
+        var quantidades = 0;
+        var valores = [];
+
+        while (quantidades < dados.length) {
+            valores.push(dados[quantidades].quantidade);
+            quantidades++;
+        }
+        return valores;
+    }
+
+    function PegarCores(quantidade) {
+        var cores = [];
+        while (quantidade >= 0) {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+
+            cores.push("rgb(" + r + "," + g + "," + b + ")");
+
+            quantidade--;
+        }
+        return cores;
+    }
+
+
+
+    $.ajax({
+        type: "GET",
+        url: "Moedas/DadosGraficos",
+        success: function (dados) {
+            new Chart(document.getElementById("graficos"), {
+                type: 'pie',
+                data:
+                {
+                    labels: PegarMoedas(dados),
+                    datasets:
+                    [{
+                        labels: "Quantidades",
+                        borderWidth: 2,
+                        backgroundColor: PegarCores(dados.length),
+                        data: PegarQuantidades(dados)
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: "Quantidades de votos",
+                    }
+                }
+            })
+        }
+
+    })
+</script>
